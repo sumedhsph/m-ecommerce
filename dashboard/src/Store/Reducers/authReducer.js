@@ -2,17 +2,21 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import api from "../../api/api";
 
 export const admin_login = createAsyncThunk(
-    'auth/admin_login',
-    async(info) => {
-        console.log("Info>>>",info);
-        try {
-            const {data} = await api.post('/admin-login',info,{withCredentials: true})
-            console.log("trycatch data from API", data)
-        } catch (error) {
-            console.log(error.response.data);
-        }
+  "auth/admin_login",
+  async (info, { rejectWithValue, fulfillWithValue }) => {
+    console.log("Info>>>", info);
+    try {
+      const { data } = await api.post("/admin-login", info, {
+        withCredentials: true,
+      });
+      //console.log("trycatch data from API", data)
+      return fulfillWithValue(data);
+    } catch (error) {
+      console.log(error.response.data);
+      return rejectWithValue(error.response.data);
     }
-)
+  }
+);
 
 export const authReducer = createSlice({
   name: "auth",
@@ -24,14 +28,21 @@ export const authReducer = createSlice({
   },
   reducers: {
     // You can define your reducers here if needed
+    messageClear: (state) => {
+      state.errorMessage = "";
+    },
   },
   extraReducers: (builder) => {
-    // You can add extra reducers here using the builder callback notation
-    // Example:
-    // builder.addCase(someAction.fulfilled, (state, action) => {
-    //   state.someProperty = action.payload;
-    // });
+    builder.addCase(admin_login.pending, (state, { payload }) => {
+      state.loader = true;
+    });
+    builder.addCase(admin_login.rejected, (state, { payload }) => {
+      (state.loader = false), (state.errorMessage = payload?.error);
+    });
+    builder.addCase(admin_login.fulfilled, (state, { payload }) => {
+      (state.loader = false), (state.successMessage = payload?.message);
+    });
   },
 });
-
+export const { messageClear } = authReducer.actions;
 export default authReducer.reducer;
