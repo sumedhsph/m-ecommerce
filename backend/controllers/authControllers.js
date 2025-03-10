@@ -1,19 +1,36 @@
 import adminModel from "../models/adminModel.js";
+import responseReturn from "../utils/responseReturn.js";
+import bcrypt from "bcrypt";
+import createToken from "../utils/tokenCreate.js";
 
 class AuthControllers {
   admin_login = async (req, res) => {
     const { email, password } = req.body;
-    console.log(req.body)
+    //console.log(req.body)
     try {
       const admin = await adminModel.findOne({ email }).select("+password");
       console.log(admin)
       if (admin) {
+        const match = await bcrypt.compare(password, admin.password);
+        //console.log(match);
+        if(match){
+          const token = await createToken({
+            id: admin.id,
+            role: admin
+          })
+          res.cookie('accessToken', token, {
+            expires: new Date(Date.now() + 7*24*60*60*1000)
+          })
+          responseReturn(res, 200, {token, message: "Login Successful"})
+        } else{
+          responseReturn(res, 404, { error: "Wrong Password" });   
+        }
       } else {
-       // responseReture(res, 404, { error: "Email not Found" });
+       responseReturn(res, 404, { error: "Email not Found" });
        console.log("Email not Found")
       }
     } catch (error) {
-      //responseReture(res, 500, { error: error.message });
+      responseReturn(res, 500, { error: error.message });
       console.log(error);
     }
   };

@@ -1,15 +1,17 @@
-import express from "express";
 import dotenv from "dotenv";
+import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import authRoutes from "./routes/authRoutes.js"; // Ensure .js extension is added
 import dbconnect from "./utils/db.js";
+// Load environment variables
+dotenv.config({
+  path:"./env"
+});
 
 const app = express();
 
-// Load environment variables
-dotenv.config();
 
 // Middleware
 app.use(
