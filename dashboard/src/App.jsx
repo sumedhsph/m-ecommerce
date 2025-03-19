@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react"; // No need for useState if initializing once
 import Router from "./router/Router";
 import publicRoutes from "./router/routes/publicRoutes";
+import { getRoutes } from "./router/routes";
 
 function App() {
-  const [allRoutes, setAllRoutes] = useState([...publicRoutes]);
+  const allRoutes = [...publicRoutes, getRoutes()]; // Combine at render
+
   return <Router allRoutes={allRoutes} />;
 }
 

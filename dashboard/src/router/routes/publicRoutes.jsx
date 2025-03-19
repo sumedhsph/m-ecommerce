@@ -8,10 +8,10 @@ const AdminLogin = lazy(() => import("../../views/auth/AdminLogin"));
 //import Login from "../../views/auth/Login";
 //import Register from "../../views/auth/Register";
 const publicRoutes = [
-  {
+  /* {
     path: "/",
     element: <Home1 />,
-  },
+  }, */
   {
     path: "/login",
     element: <Login />,
